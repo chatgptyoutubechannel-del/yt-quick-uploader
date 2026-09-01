@@ -4,106 +4,47 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <meta name="description" content="A simple mobile YouTube uploader." />
+  <meta name="description" content="Share a video from Android and upload it privately to YouTube." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="icon-192.png" type="image/png" />
   <title>YT Quick Uploader</title>
   <style>
-    :root {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color-scheme: dark;
-      --bg: #0b1020;
-      --card: #121a2d;
-      --muted: #9aa6bd;
-      --line: #27324a;
-      --accent: #ffffff;
-      --danger: #ffb4b4;
-      --good: #b8f7c8;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: var(--bg); color: #f7f8fb;
-      min-height: 100vh;
-    }
-    main {
-      width: min(720px, 100%);
-      margin: 0 auto;
-      padding: 20px 16px 48px;
-    }
-    h1 { font-size: 1.65rem; margin: 4px 0 6px; }
-    h2 { font-size: 1.05rem; margin: 0 0 12px; }
-    p { line-height: 1.45; }
-    .muted { color: var(--muted); }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      margin-top: 14px;
-    }
-    label { display: block; font-weight: 650; margin: 12px 0 7px; }
-    input, textarea, select, button {
-      width: 100%;
-      font: inherit;
-    }
-    input, textarea, select {
-      background: #0c1324; color: #fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px;
-      outline: none;
-    }
-    textarea { min-height: 110px; resize: vertical; }
-    input:focus, textarea:focus, select:focus { border-color: #7d8fb8; }
-    button, .button-link {
-      border: 0;
-      border-radius: 13px;
-      padding: 13px 14px;
-      font-weight: 750;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      background: var(--accent);
-      color: #111827;
-    }
-    button.secondary, .button-link.secondary {
-      background: #202a40; color: #fff; border: 1px solid var(--line);
-    }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
-    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
-    .checkbox {
-      display: flex; gap: 10px; align-items: flex-start; font-weight: 500;
-      margin-top: 14px;
-    }
-    .checkbox input { width: 22px; height: 22px; margin: 0; flex: 0 0 auto; }
-    .status {
-      border-radius: 12px; padding: 11px 12px; background: #0c1324;
-      border: 1px solid var(--line); margin-top: 12px; white-space: pre-wrap;
-    }
-    .status.good { color: var(--good); }
-    .status.error { color: var(--danger); }
-    progress { width: 100%; height: 18px; margin-top: 10px; }
-    .small { font-size: .9rem; }
-    .hidden { display: none !important; }
-    .pill {
-      display: inline-block; border: 1px solid var(--line); border-radius: 999px;
-      padding: 5px 9px; color: var(--muted); font-size: .82rem;
-    }
+    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:dark;--bg:#0b1020;--card:#121a2d;--muted:#9aa6bd;--line:#27324a;--accent:#fff;--danger:#ffb4b4;--good:#b8f7c8;--purple:#8b5cf6}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -15%,#291d59 0,#0b1020 42%);color:#f7f8fb;min-height:100vh} main{width:min(720px,100%);margin:0 auto;padding:20px 16px 48px}
+    h1{font-size:1.7rem;margin:4px 0 6px} h2{font-size:1.05rem;margin:0 0 12px} p{line-height:1.45}.muted{color:var(--muted)}.small{font-size:.9rem}.hidden{display:none!important}
+    .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#d8cff7;font-size:.82rem;background:#171329}
+    .hero{padding:8px 2px 6px}.card{background:rgba(18,26,45,.95);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 10px 32px rgba(0,0,0,.18)}
+    .share-card{border-color:#7554cf;background:linear-gradient(145deg,#17142d,#121a2d)}
+    label{display:block;font-weight:650;margin:12px 0 7px} input,textarea,select,button{width:100%;font:inherit} input,textarea,select{background:#0c1324;color:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;outline:none} textarea{min-height:110px;resize:vertical} input:focus,textarea:focus,select:focus{border-color:#7d8fb8}
+    button,.button-link{border:0;border-radius:13px;padding:13px 14px;font-weight:750;cursor:pointer;text-align:center;text-decoration:none;display:inline-block;background:var(--accent);color:#111827}.secondary{background:#202a40!important;color:#fff!important;border:1px solid var(--line)!important}.purple{background:var(--purple)!important;color:#fff!important}button:disabled{opacity:.5;cursor:not-allowed}
+    .row{display:grid;gap:10px;grid-template-columns:1fr 1fr}@media(max-width:520px){.row{grid-template-columns:1fr}}
+    .checkbox{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin-top:14px}.checkbox input{width:22px;height:22px;margin:0;flex:0 0 auto}
+    .status{border-radius:12px;padding:11px 12px;background:#0c1324;border:1px solid var(--line);margin-top:12px;white-space:pre-wrap}.status.good{color:var(--good)}.status.error{color:var(--danger)}progress{width:100%;height:18px;margin-top:10px}
+    .file-name{font-weight:750;word-break:break-word}.actions{display:grid;gap:9px;margin-top:12px}.tiny-note{font-size:.8rem;color:#8491aa;margin-top:8px}.install-note{background:#191629;border:1px dashed #6f55b3;border-radius:12px;padding:11px;margin-top:10px}.kbd{font-family:ui-monospace,monospace;background:#0d1323;border:1px solid #29354e;padding:2px 6px;border-radius:6px}
   </style>
 </head>
 <body>
 <main>
-  <div class="pill">Phone-first • no PC required</div>
-  <h1>YT Quick Uploader</h1>
-  <p class="muted">Select a video, sign in to Google, add the details and upload it to YouTube.</p>
+  <div class="hero">
+    <div class="pill">Brain Trap • Android share uploader</div>
+    <h1>YT Quick Uploader</h1>
+    <p class="muted">Once installed, share a finished video to this app. It will load the file, fill your Brain Trap defaults and upload it privately to YouTube.</p>
+    <button id="installBtn" class="purple hidden">Install YT Quick Uploader</button>
+    <div id="installHelp" class="install-note small">After this version is live, install it once in Chrome/Samsung Internet. Only an <b>installed</b> PWA can appear in Android's Share menu.</div>
+  </div>
+
+  <section id="sharedCard" class="card share-card hidden">
+    <h2>Shared video received ✓</h2>
+    <div id="sharedFileName" class="file-name"></div>
+    <div id="sharedFileMeta" class="muted small"></div>
+    <p class="small">Your Brain Trap upload details have been filled automatically.</p>
+  </section>
 
   <section class="card">
-    <h2>1. One-time setup</h2>
+    <h2>1. One-time Google setup</h2>
     <label for="clientId">Google OAuth Client ID</label>
     <input id="clientId" autocomplete="off" placeholder="123456789-abc123.apps.googleusercontent.com" />
-    <p class="muted small">This stays in your browser on this device. Never enter a client secret here.</p>
+    <p class="muted small">Saved only in this browser. Never enter a client secret.</p>
     <button id="saveClient" class="secondary">Save Client ID</button>
   </section>
 
@@ -114,55 +55,36 @@
   </section>
 
   <section class="card">
-    <h2>3. Choose video</h2>
+    <h2>3. Video & Brain Trap details</h2>
     <label for="videoFile">Video file</label>
     <input id="videoFile" type="file" accept="video/*" />
     <div id="fileInfo" class="muted small"></div>
 
     <label for="title">Title</label>
-    <input id="title" maxlength="100" placeholder="Video title" />
-
+    <input id="title" maxlength="100" />
     <label for="description">Description</label>
-    <textarea id="description" maxlength="5000" placeholder="Video description"></textarea>
-
+    <textarea id="description" maxlength="5000"></textarea>
     <label for="tags">Tags</label>
-    <input id="tags" placeholder="sleep, relaxing, puzzle" />
-    <p class="muted small">Separate tags with commas.</p>
+    <input id="tags" />
 
     <div class="row">
-      <div>
-        <label for="category">Category</label>
-        <select id="category">
-          <option value="22">People & Blogs</option>
-          <option value="24">Entertainment</option>
-          <option value="26">Howto & Style</option>
-          <option value="27">Education</option>
-          <option value="10">Music</option>
-          <option value="15">Pets & Animals</option>
-          <option value="28">Science & Technology</option>
-        </select>
-      </div>
-      <div>
-        <label for="privacy">Upload visibility</label>
-        <select id="privacy" disabled>
-          <option value="private">Private (required initially)</option>
-        </select>
-      </div>
+      <div><label for="category">Category</label><select id="category"><option value="24">Entertainment</option><option value="27">Education</option><option value="22">People & Blogs</option></select></div>
+      <div><label>Visibility</label><input value="Private (YouTube API requirement)" disabled /></div>
     </div>
 
-    <label class="checkbox">
-      <input id="madeForKids" type="checkbox" />
-      <span>This video is made for kids</span>
-    </label>
+    <label class="checkbox"><input id="madeForKids" type="checkbox" /><span>This video is made for kids</span></label>
+    <label class="checkbox"><input id="autoUpload" type="checkbox" checked /><span>When a video is shared to this app, start upload automatically if YouTube is already connected</span></label>
 
-    <div class="status muted small">
-      New/unverified YouTube API projects are restricted to uploading videos as Private. After upload, use YouTube Studio to change visibility if your project has not passed YouTube's API audit.
+    <div class="actions">
+      <button id="brainTrapPreset" class="secondary">Restore Brain Trap defaults</button>
+      <button id="saveDefaults" class="secondary">Save these details as defaults</button>
     </div>
+    <div class="tiny-note">The app does not store your video. A shared file is held only long enough to hand it from Android to the uploader page.</div>
   </section>
 
   <section class="card">
     <h2>4. Upload</h2>
-    <button id="uploadBtn" disabled>Upload to YouTube</button>
+    <button id="uploadBtn" class="purple" disabled>Upload privately to YouTube</button>
     <progress id="progress" value="0" max="100" class="hidden"></progress>
     <div id="uploadStatus" class="status muted">Ready when a video is selected and YouTube is connected.</div>
     <a id="studioLink" class="button-link secondary hidden" href="https://studio.youtube.com/" target="_blank" rel="noopener">Open YouTube Studio</a>
@@ -173,280 +95,181 @@
 <script>
 (() => {
   const SCOPE = "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly";
+  const MEDIA_CACHE = "yt-quick-uploader-shared-media-v1";
+  const PRESET = {
+    title: "Can You Solve This Before Time Runs Out? 🧠 #shorts",
+    description: "Think you can solve it before the answer appears? 🧠\n\nComment your answer before the reveal and follow Brain Trap for more riddles, puzzles and brain teasers.\n\n#shorts #riddle #brainteaser #puzzle #braintrap",
+    tags: "riddle, brain teaser, puzzle, shorts, brain trap, riddles, quiz",
+    category: "24",
+    madeForKids: false
+  };
+
+  const $ = id => document.getElementById(id);
   const els = {
-    clientId: document.getElementById("clientId"),
-    saveClient: document.getElementById("saveClient"),
-    connectBtn: document.getElementById("connectBtn"),
-    channelStatus: document.getElementById("channelStatus"),
-    videoFile: document.getElementById("videoFile"),
-    fileInfo: document.getElementById("fileInfo"),
-    title: document.getElementById("title"),
-    description: document.getElementById("description"),
-    tags: document.getElementById("tags"),
-    category: document.getElementById("category"),
-    madeForKids: document.getElementById("madeForKids"),
-    uploadBtn: document.getElementById("uploadBtn"),
-    progress: document.getElementById("progress"),
-    uploadStatus: document.getElementById("uploadStatus"),
-    studioLink: document.getElementById("studioLink"),
+    installBtn: $("installBtn"), installHelp: $("installHelp"), sharedCard: $("sharedCard"), sharedFileName: $("sharedFileName"), sharedFileMeta: $("sharedFileMeta"),
+    clientId: $("clientId"), saveClient: $("saveClient"), connectBtn: $("connectBtn"), channelStatus: $("channelStatus"), videoFile: $("videoFile"), fileInfo: $("fileInfo"),
+    title: $("title"), description: $("description"), tags: $("tags"), category: $("category"), madeForKids: $("madeForKids"), autoUpload: $("autoUpload"),
+    brainTrapPreset: $("brainTrapPreset"), saveDefaults: $("saveDefaults"), uploadBtn: $("uploadBtn"), progress: $("progress"), uploadStatus: $("uploadStatus"), studioLink: $("studioLink")
   };
 
   let tokenClient = null;
   let accessToken = "";
   let selectedFile = null;
+  let deferredInstall = null;
+  let uploadStarted = false;
 
-  const savedClient = localStorage.getItem("ytQuickUploader.clientId") || "";
-  els.clientId.value = savedClient;
+  function setStatus(el, text, kind="muted") { el.textContent = text; el.classList.remove("good","error","muted"); el.classList.add(kind); }
+  function humanBytes(bytes) { const u=["B","KB","MB","GB"]; let i=0,n=bytes; while(n>=1024&&i<u.length-1){n/=1024;i++} return `${n.toFixed(i?1:0)} ${u[i]}`; }
+  function refreshUploadButton() { els.uploadBtn.disabled = !(accessToken && selectedFile && els.title.value.trim()); }
+  function decodeHeader(v) { try { return decodeURIComponent(v || ""); } catch { return v || ""; } }
 
-  function setStatus(el, text, kind="muted") {
-    el.textContent = text;
-    el.classList.remove("good", "error", "muted");
-    el.classList.add(kind);
+  function loadDefaults() {
+    const saved = JSON.parse(localStorage.getItem("ytQuickUploader.defaults") || "null");
+    const d = saved || PRESET;
+    els.title.value = d.title || PRESET.title;
+    els.description.value = d.description || PRESET.description;
+    els.tags.value = d.tags || PRESET.tags;
+    els.category.value = d.category || PRESET.category;
+    els.madeForKids.checked = !!d.madeForKids;
+    els.autoUpload.checked = localStorage.getItem("ytQuickUploader.autoUpload") !== "false";
   }
 
-  function humanBytes(bytes) {
-    const units = ["B","KB","MB","GB"];
-    let i = 0, n = bytes;
-    while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
-    return `${n.toFixed(i ? 1 : 0)} ${units[i]}`;
+  function saveDefaults() {
+    const d = { title: els.title.value.trim(), description: els.description.value, tags: els.tags.value, category: els.category.value, madeForKids: !!els.madeForKids.checked };
+    localStorage.setItem("ytQuickUploader.defaults", JSON.stringify(d));
+    localStorage.setItem("ytQuickUploader.autoUpload", String(!!els.autoUpload.checked));
+    setStatus(els.uploadStatus, "Brain Trap defaults saved on this phone.", "good");
   }
 
-  function refreshUploadButton() {
-    els.uploadBtn.disabled = !(accessToken && selectedFile && els.title.value.trim());
+  function applyPreset() {
+    els.title.value = PRESET.title; els.description.value = PRESET.description; els.tags.value = PRESET.tags; els.category.value = PRESET.category; els.madeForKids.checked = false;
+    refreshUploadButton();
   }
 
-  function waitForGoogleIdentity(timeoutMs = 12000) {
-    return new Promise((resolve, reject) => {
-      const start = Date.now();
-      const timer = setInterval(() => {
-        if (window.google && google.accounts && google.accounts.oauth2) {
-          clearInterval(timer); resolve();
-        } else if (Date.now() - start > timeoutMs) {
-          clearInterval(timer);
-          reject(new Error("Google sign-in library did not load. Check your internet connection and reload the page."));
-        }
-      }, 150);
-    });
+  function chooseFile(file, source="picker") {
+    selectedFile = file || null;
+    if (!selectedFile) { els.fileInfo.textContent = ""; refreshUploadButton(); return; }
+    els.fileInfo.textContent = `${selectedFile.name} • ${humanBytes(selectedFile.size)} • ${selectedFile.type || "video"}`;
+    if (source === "share") {
+      els.sharedCard.classList.remove("hidden");
+      els.sharedFileName.textContent = selectedFile.name;
+      els.sharedFileMeta.textContent = `${humanBytes(selectedFile.size)} • ${selectedFile.type || "video"}`;
+    }
+    refreshUploadButton();
+    maybeAutoUpload();
   }
 
-  els.saveClient.addEventListener("click", () => {
-    const id = els.clientId.value.trim();
-    if (!id.endsWith(".apps.googleusercontent.com")) {
-      alert("That does not look like a Google OAuth Web Client ID.");
+  async function consumeSharedVideo() {
+    const params = new URLSearchParams(location.search);
+    if (params.get("shareError")) {
+      setStatus(els.uploadStatus, "Android opened the uploader, but no usable video file was received.", "error");
       return;
     }
-    localStorage.setItem("ytQuickUploader.clientId", id);
-    tokenClient = null;
-    alert("Client ID saved on this device.");
-  });
-
-  els.connectBtn.addEventListener("click", async () => {
+    if (!params.has("shareTarget")) return;
     try {
-      const clientId = els.clientId.value.trim();
-      if (!clientId) throw new Error("Enter and save your Google OAuth Client ID first.");
-
-      await waitForGoogleIdentity();
-
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: SCOPE,
-        callback: async (response) => {
-          if (response.error) {
-            setStatus(els.channelStatus, `Sign-in error: ${response.error}`, "error");
-            return;
-          }
-          accessToken = response.access_token;
-          try {
-            await showConnectedChannel();
-          } catch (e) {
-            setStatus(els.channelStatus, "Connected to YouTube. Channel name could not be loaded, but upload permission was granted.", "good");
-          }
-          refreshUploadButton();
-        },
-        error_callback: (err) => {
-          setStatus(els.channelStatus, `Sign-in was not completed: ${err.type || "unknown error"}`, "error");
-        }
-      });
-
-      tokenClient.requestAccessToken({prompt: accessToken ? "" : "consent"});
+      const cache = await caches.open(MEDIA_CACHE);
+      const response = await cache.match("./__shared_video__");
+      if (!response) throw new Error("Shared video could not be recovered.");
+      const blob = await response.blob();
+      const name = decodeHeader(response.headers.get("X-Shared-Filename")) || "shared-video.mp4";
+      await cache.delete("./__shared_video__");
+      const file = new File([blob], name, {type: blob.type || "video/mp4", lastModified: Date.now()});
+      chooseFile(file, "share");
+      history.replaceState({}, "", location.pathname);
     } catch (e) {
-      setStatus(els.channelStatus, e.message, "error");
+      setStatus(els.uploadStatus, `Could not load shared video: ${e.message}`, "error");
     }
-  });
+  }
+
+  function waitForGoogleIdentity(timeoutMs=12000) {
+    return new Promise((resolve,reject)=>{ const start=Date.now(); const timer=setInterval(()=>{ if(window.google&&google.accounts&&google.accounts.oauth2){clearInterval(timer);resolve()} else if(Date.now()-start>timeoutMs){clearInterval(timer);reject(new Error("Google sign-in library did not load. Check internet and reload."))}},150); });
+  }
 
   async function showConnectedChannel() {
-    const r = await fetch("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    if (r.status === 401) throw new Error("Authorization expired.");
+    const r = await fetch("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", {headers:{Authorization:`Bearer ${accessToken}`}});
+    if (r.status===401) throw new Error("Authorization expired.");
     if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    const item = data.items && data.items[0];
-    if (!item) throw new Error("No YouTube channel found for this account.");
+    const data = await r.json(); const item = data.items && data.items[0]; if (!item) throw new Error("No YouTube channel found for this Google account.");
     setStatus(els.channelStatus, `Connected: ${item.snippet.title}`, "good");
   }
 
-  els.videoFile.addEventListener("change", () => {
-    selectedFile = els.videoFile.files && els.videoFile.files[0] ? els.videoFile.files[0] : null;
-    if (selectedFile) {
-      els.fileInfo.textContent = `${selectedFile.name} • ${humanBytes(selectedFile.size)} • ${selectedFile.type || "video"}`;
-      if (!els.title.value.trim()) {
-        els.title.value = selectedFile.name.replace(/\.[^.]+$/, "").slice(0, 100);
-      }
-    } else {
-      els.fileInfo.textContent = "";
-    }
-    refreshUploadButton();
-  });
-
-  els.title.addEventListener("input", refreshUploadButton);
-
-  els.uploadBtn.addEventListener("click", async () => {
-    if (!selectedFile || !accessToken) return;
-    els.uploadBtn.disabled = true;
-    els.studioLink.classList.add("hidden");
-    els.progress.classList.remove("hidden");
-    els.progress.value = 0;
-    setStatus(els.uploadStatus, "Starting upload…", "muted");
-
-    try {
-      const metadata = {
-        snippet: {
-          title: els.title.value.trim(),
-          description: els.description.value,
-          tags: els.tags.value.split(",").map(x => x.trim()).filter(Boolean),
-          categoryId: els.category.value
+  async function connectYouTube() {
+    const clientId = els.clientId.value.trim();
+    if (!clientId) throw new Error("Enter and save your Google OAuth Client ID first.");
+    await waitForGoogleIdentity();
+    return new Promise((resolve,reject)=>{
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId, scope: SCOPE,
+        callback: async response => {
+          if (response.error) { reject(new Error(response.error)); return; }
+          accessToken = response.access_token;
+          try { await showConnectedChannel(); } catch { setStatus(els.channelStatus,"Connected to YouTube. Upload permission granted.","good"); }
+          refreshUploadButton(); resolve();
         },
-        status: {
-          privacyStatus: "private",
-          selfDeclaredMadeForKids: !!els.madeForKids.checked
-        }
-      };
-
-      const sessionUrl = await startResumableSession(selectedFile, metadata);
-      const result = await uploadInChunks(sessionUrl, selectedFile);
-
-      const videoId = result.id;
-      setStatus(
-        els.uploadStatus,
-        `Upload complete${videoId ? `\nVideo ID: ${videoId}` : ""}\n\nOpen YouTube Studio to review it and change visibility when permitted.`,
-        "good"
-      );
-      els.progress.value = 100;
-      els.studioLink.classList.remove("hidden");
-    } catch (e) {
-      console.error(e);
-      if (String(e.message).includes("401")) accessToken = "";
-      setStatus(els.uploadStatus, `Upload failed:\n${cleanError(e)}`, "error");
-    } finally {
-      refreshUploadButton();
-    }
-  });
-
-  function cleanError(e) {
-    const text = e && e.message ? e.message : String(e);
-    try {
-      const obj = JSON.parse(text);
-      return obj.error?.message || text;
-    } catch { return text; }
+        error_callback: err => reject(new Error(err.type || "Google sign-in was not completed."))
+      });
+      tokenClient.requestAccessToken({prompt: accessToken ? "" : "consent"});
+    });
   }
+
+  async function maybeAutoUpload() {
+    if (!els.autoUpload.checked || !selectedFile || !accessToken || uploadStarted) return;
+    await beginUpload();
+  }
+
+  function cleanError(e) { const text=e&&e.message?e.message:String(e); try{const obj=JSON.parse(text);return obj.error?.message||text}catch{return text} }
 
   async function startResumableSession(file, metadata) {
     const endpoint = "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status";
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": "application/json; charset=UTF-8",
-        "X-Upload-Content-Length": String(file.size),
-        "X-Upload-Content-Type": file.type || "application/octet-stream"
-      },
-      body: JSON.stringify(metadata)
-    });
-
-    if (response.status === 401) throw new Error("401: Your Google sign-in expired. Sign in again.");
-    if (!response.ok) throw new Error(await response.text());
-
-    const location = response.headers.get("Location");
-    if (!location) throw new Error("YouTube did not return an upload session URL.");
-    return location;
+    const response = await fetch(endpoint,{method:"POST",headers:{Authorization:`Bearer ${accessToken}`,"Content-Type":"application/json; charset=UTF-8","X-Upload-Content-Length":String(file.size),"X-Upload-Content-Type":file.type||"application/octet-stream"},body:JSON.stringify(metadata)});
+    if(response.status===401) throw new Error("401: Google sign-in expired. Sign in again.");
+    if(!response.ok) throw new Error(await response.text());
+    const location=response.headers.get("Location"); if(!location) throw new Error("YouTube did not return an upload session URL."); return location;
   }
 
-  async function uploadInChunks(sessionUrl, file) {
-    const chunkSize = 8 * 1024 * 1024; // 8 MiB, a multiple of 256 KiB
-    let start = 0;
-    let lastResult = null;
+  function putChunk(sessionUrl,chunk,start,endInclusive,total,mimeType){return fetch(sessionUrl,{method:"PUT",headers:{Authorization:`Bearer ${accessToken}`,"Content-Type":mimeType||"application/octet-stream","Content-Range":`bytes ${start}-${endInclusive}/${total}`},body:chunk})}
+  async function queryUploadStatus(sessionUrl,total){const r=await fetch(sessionUrl,{method:"PUT",headers:{Authorization:`Bearer ${accessToken}`,"Content-Range":`bytes */${total}`}});if(r.status===200||r.status===201)return r.json();throw new Error("Upload did not return a final video record.")}
 
-    while (start < file.size) {
-      const endExclusive = Math.min(start + chunkSize, file.size);
-      const endInclusive = endExclusive - 1;
-      const chunk = file.slice(start, endExclusive);
-
-      setStatus(
-        els.uploadStatus,
-        `Uploading… ${Math.floor((start / file.size) * 100)}%\nKeep this page open until it finishes.`,
-        "muted"
-      );
-
-      const response = await putChunk(sessionUrl, chunk, start, endInclusive, file.size, file.type);
-
-      if (response.status === 308) {
-        const range = response.headers.get("Range");
-        if (range) {
-          const m = range.match(/(\d+)-(\d+)$/);
-          start = m ? Number(m[2]) + 1 : endExclusive;
-        } else {
-          start = endExclusive;
-        }
-        els.progress.value = Math.min(99, (start / file.size) * 100);
-        continue;
-      }
-
-      if (response.status === 200 || response.status === 201) {
-        lastResult = await response.json();
-        start = file.size;
-        els.progress.value = 100;
-        break;
-      }
-
-      if (response.status === 401) throw new Error("401: Your Google sign-in expired. Sign in again.");
-      const body = await response.text();
-      throw new Error(body || `YouTube returned HTTP ${response.status}.`);
+  async function uploadInChunks(sessionUrl,file){
+    const chunkSize=8*1024*1024; let start=0,lastResult=null;
+    while(start<file.size){
+      const endExclusive=Math.min(start+chunkSize,file.size), endInclusive=endExclusive-1, chunk=file.slice(start,endExclusive);
+      setStatus(els.uploadStatus,`Uploading… ${Math.floor((start/file.size)*100)}%\nKeep the app open until it finishes.`,"muted");
+      const response=await putChunk(sessionUrl,chunk,start,endInclusive,file.size,file.type);
+      if(response.status===308){const range=response.headers.get("Range");if(range){const m=range.match(/(\d+)-(\d+)$/);start=m?Number(m[2])+1:endExclusive}else start=endExclusive;els.progress.value=Math.min(99,(start/file.size)*100);continue}
+      if(response.status===200||response.status===201){lastResult=await response.json();start=file.size;els.progress.value=100;break}
+      if(response.status===401) throw new Error("401: Google sign-in expired. Sign in again.");
+      throw new Error((await response.text())||`YouTube returned HTTP ${response.status}.`);
     }
-
-    if (!lastResult) {
-      lastResult = await queryUploadStatus(sessionUrl, file.size);
-    }
-    return lastResult;
+    if(!lastResult) lastResult=await queryUploadStatus(sessionUrl,file.size); return lastResult;
   }
 
-  function putChunk(sessionUrl, chunk, start, endInclusive, total, mimeType) {
-    return fetch(sessionUrl, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": mimeType || "application/octet-stream",
-        "Content-Range": `bytes ${start}-${endInclusive}/${total}`
-      },
-      body: chunk
-    });
+  async function beginUpload() {
+    if (!selectedFile || !accessToken || uploadStarted) return;
+    uploadStarted=true; els.uploadBtn.disabled=true; els.studioLink.classList.add("hidden"); els.progress.classList.remove("hidden"); els.progress.value=0; setStatus(els.uploadStatus,"Starting private upload…","muted");
+    try {
+      const metadata={snippet:{title:els.title.value.trim(),description:els.description.value,tags:els.tags.value.split(",").map(x=>x.trim()).filter(Boolean),categoryId:els.category.value},status:{privacyStatus:"private",selfDeclaredMadeForKids:!!els.madeForKids.checked}};
+      const sessionUrl=await startResumableSession(selectedFile,metadata); const result=await uploadInChunks(sessionUrl,selectedFile); const videoId=result.id;
+      setStatus(els.uploadStatus,`Upload complete${videoId?`\nVideo ID: ${videoId}`:""}\n\nThe video is Private. Open YouTube Studio when you want to make it Public.`,"good");
+      els.progress.value=100; els.studioLink.classList.remove("hidden");
+    } catch(e) {
+      if(String(e.message).includes("401")) accessToken="";
+      setStatus(els.uploadStatus,`Upload failed:\n${cleanError(e)}`,"error");
+    } finally { uploadStarted=false; refreshUploadButton(); }
   }
 
-  async function queryUploadStatus(sessionUrl, total) {
-    const r = await fetch(sessionUrl, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        "Content-Range": `bytes */${total}`
-      }
-    });
-    if (r.status === 200 || r.status === 201) return r.json();
-    throw new Error("Upload did not return a final video record.");
-  }
+  els.clientId.value = localStorage.getItem("ytQuickUploader.clientId") || "";
+  loadDefaults();
+  els.saveClient.addEventListener("click",()=>{const id=els.clientId.value.trim();if(!id.endsWith(".apps.googleusercontent.com")){alert("That does not look like a Google OAuth Web Client ID.");return}localStorage.setItem("ytQuickUploader.clientId",id);tokenClient=null;alert("Client ID saved on this phone.")});
+  els.connectBtn.addEventListener("click",async()=>{try{await connectYouTube();await maybeAutoUpload()}catch(e){setStatus(els.channelStatus,`Sign-in error: ${e.message}`,"error")}});
+  els.videoFile.addEventListener("change",()=>chooseFile(els.videoFile.files&&els.videoFile.files[0]));
+  els.title.addEventListener("input",refreshUploadButton); els.uploadBtn.addEventListener("click",beginUpload); els.brainTrapPreset.addEventListener("click",applyPreset); els.saveDefaults.addEventListener("click",saveDefaults); els.autoUpload.addEventListener("change",()=>localStorage.setItem("ytQuickUploader.autoUpload",String(!!els.autoUpload.checked)));
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
-  }
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;els.installBtn.classList.remove("hidden")});
+  els.installBtn.addEventListener("click",async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;els.installBtn.classList.add("hidden")});
+  window.addEventListener("appinstalled",()=>{els.installBtn.classList.add("hidden");els.installHelp.textContent="Installed. YT Quick Uploader should now be available as a Share target for video files on supported Android browsers."});
+
+  if("serviceWorker" in navigator){window.addEventListener("load",async()=>{try{const reg=await navigator.serviceWorker.register("./sw.js");await reg.update()}catch(e){console.warn("Service worker registration failed",e)}await consumeSharedVideo()})}else{window.addEventListener("load",consumeSharedVideo)}
 })();
 </script>
 </body>
