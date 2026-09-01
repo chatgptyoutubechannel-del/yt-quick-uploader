@@ -120,7 +120,10 @@
 
   function setStatus(el, text, kind="muted") { el.textContent = text; el.classList.remove("good","error","muted"); el.classList.add(kind); }
   function humanBytes(bytes) { const u=["B","KB","MB","GB"]; let i=0,n=bytes; while(n>=1024&&i<u.length-1){n/=1024;i++} return `${n.toFixed(i?1:0)} ${u[i]}`; }
-  function refreshUploadButton() { els.uploadBtn.disabled = !(accessToken && selectedFile && els.title.value.trim()); }
+  function refreshUploadButton() {
+    els.uploadBtn.disabled = !(selectedFile && els.title.value.trim());
+    els.uploadBtn.textContent = accessToken ? "Upload privately to YouTube" : "Connect & upload privately";
+  }
   function decodeHeader(v) { try { return decodeURIComponent(v || ""); } catch { return v || ""; } }
 
   function loadDefaults() {
@@ -280,7 +283,16 @@
   }
 
   async function beginUpload() {
-    if (!selectedFile || !accessToken || uploadStarted) return;
+    if (!selectedFile || uploadStarted) return;
+    if (!accessToken) {
+      try {
+        setStatus(els.uploadStatus, "Connecting to YouTube…", "muted");
+        await requestYouTubeToken({silent:false});
+      } catch (e) {
+        setStatus(els.uploadStatus, `Google connection needed:\n${cleanError(e)}`, "error");
+        return;
+      }
+    }
     uploadStarted=true; els.uploadBtn.disabled=true; els.studioLink.classList.add("hidden"); els.progress.classList.remove("hidden"); els.progress.value=0; setStatus(els.uploadStatus,"Starting private upload…","muted");
     try {
       const metadata={snippet:{title:els.title.value.trim(),description:els.description.value,tags:els.tags.value.split(",").map(x=>x.trim()).filter(Boolean),categoryId:els.category.value},status:{privacyStatus:"private",selfDeclaredMadeForKids:!!els.madeForKids.checked}};
@@ -295,6 +307,7 @@
 
   els.clientId.value = localStorage.getItem("ytQuickUploader.clientId") || "";
   loadDefaults();
+  refreshUploadButton();
   els.saveClient.addEventListener("click",()=>{const id=els.clientId.value.trim();if(!id.endsWith(".apps.googleusercontent.com")){alert("That does not look like a Google OAuth Web Client ID.");return}localStorage.setItem("ytQuickUploader.clientId",id);tokenClient=null;alert("Client ID saved on this phone.")});
   els.connectBtn.addEventListener("click",async()=>{try{await connectYouTube();await maybeAutoUpload()}catch(e){setStatus(els.channelStatus,`Sign-in error: ${e.message}`,"error")}});
   els.videoFile.addEventListener("change",()=>chooseFile(els.videoFile.files&&els.videoFile.files[0]));
