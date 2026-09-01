@@ -190,26 +190,61 @@
     if (r.status===401) throw new Error("Authorization expired.");
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json(); const item = data.items && data.items[0]; if (!item) throw new Error("No YouTube channel found for this Google account.");
-    setStatus(els.channelStatus, `Connected: ${item.snippet.title}`, "good");
+    const channelName = item.snippet.title;
+    localStorage.setItem("ytQuickUploader.authorizedBefore", "true");
+    localStorage.setItem("ytQuickUploader.channelName", channelName);
+    setStatus(els.channelStatus, `Connected: ${channelName}`, "good");
   }
 
-  async function connectYouTube() {
+  async function requestYouTubeToken({silent=false}={}) {
     const clientId = els.clientId.value.trim();
     if (!clientId) throw new Error("Enter and save your Google OAuth Client ID first.");
     await waitForGoogleIdentity();
     return new Promise((resolve,reject)=>{
       tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId, scope: SCOPE,
+        client_id: clientId,
+        scope: SCOPE,
         callback: async response => {
           if (response.error) { reject(new Error(response.error)); return; }
-          accessToken = response.access_token;
-          try { await showConnectedChannel(); } catch { setStatus(els.channelStatus,"Connected to YouTube. Upload permission granted.","good"); }
-          refreshUploadButton(); resolve();
+          accessToken = response.access_token || "";
+          if (!accessToken) { reject(new Error("Google did not return an access token.")); return; }
+          try {
+            await showConnectedChannel();
+          } catch (e) {
+            if (String(e.message).includes("Authorization expired")) { accessToken=""; reject(e); return; }
+            localStorage.setItem("ytQuickUploader.authorizedBefore", "true");
+            setStatus(els.channelStatus,"Connected to YouTube. Upload permission granted.","good");
+          }
+          refreshUploadButton();
+          resolve();
         },
-        error_callback: err => reject(new Error(err.type || "Google sign-in was not completed."))
+        error_callback: err => reject(new Error(err.type || (silent ? "Silent reconnect was unavailable." : "Google sign-in was not completed.")))
       });
-      tokenClient.requestAccessToken({prompt: accessToken ? "" : "consent"});
+      // After consent has already been granted, Google supports an empty prompt
+      // to obtain a fresh short-lived access token without showing consent again.
+      tokenClient.requestAccessToken({prompt: silent ? "" : (localStorage.getItem("ytQuickUploader.authorizedBefore") === "true" ? "" : "consent")});
     });
+  }
+
+  async function connectYouTube() {
+    await requestYouTubeToken({silent:false});
+  }
+
+  async function restoreYouTubeSilently() {
+    const clientId = els.clientId.value.trim();
+    if (!clientId || accessToken) return false;
+    const knownChannel = localStorage.getItem("ytQuickUploader.channelName") || "Brain Trap";
+    setStatus(els.channelStatus, `Reconnecting to ${knownChannel}…`, "muted");
+    try {
+      await requestYouTubeToken({silent:true});
+      await maybeAutoUpload();
+      return true;
+    } catch (e) {
+      accessToken = "";
+      refreshUploadButton();
+      setStatus(els.channelStatus, `Reconnect needed. Tap Sign in with Google.`, "muted");
+      return false;
+    }
   }
 
   async function maybeAutoUpload() {
@@ -269,7 +304,18 @@
   els.installBtn.addEventListener("click",async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;els.installBtn.classList.add("hidden")});
   window.addEventListener("appinstalled",()=>{els.installBtn.classList.add("hidden");els.installHelp.textContent="Installed. YT Quick Uploader should now be available as a Share target for video files on supported Android browsers."});
 
-  if("serviceWorker" in navigator){window.addEventListener("load",async()=>{try{const reg=await navigator.serviceWorker.register("./sw.js");await reg.update()}catch(e){console.warn("Service worker registration failed",e)}await consumeSharedVideo()})}else{window.addEventListener("load",consumeSharedVideo)}
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",async()=>{
+      try{const reg=await navigator.serviceWorker.register("./sw.js");await reg.update()}catch(e){console.warn("Service worker registration failed",e)}
+      await consumeSharedVideo();
+      // A shared launch is a fresh PWA instance, so restore a YouTube token after
+      // the video has been recovered. If Google can do this silently, auto-upload
+      // begins immediately; otherwise the normal sign-in button remains available.
+      await restoreYouTubeSilently();
+    })
+  } else {
+    window.addEventListener("load",async()=>{await consumeSharedVideo();await restoreYouTubeSilently()})
+  }
 })();
 </script>
 </body>
