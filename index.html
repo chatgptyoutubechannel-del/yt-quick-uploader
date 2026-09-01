@@ -162,6 +162,33 @@
     maybeAutoUpload();
   }
 
+  async function consumeLinkedVideo() {
+    const params = new URLSearchParams(location.search);
+    const videoPath = params.get("video");
+    if (!videoPath) return false;
+    try {
+      const videoUrl = new URL(videoPath, location.href);
+      if (videoUrl.origin !== location.origin) throw new Error("Only videos hosted with this app can be loaded.");
+      setStatus(els.uploadStatus, "Loading your video…", "muted");
+      const response = await fetch(videoUrl.href, {cache:"no-store"});
+      if (!response.ok) throw new Error(`Video download failed (HTTP ${response.status}).`);
+      const blob = await response.blob();
+      const filename = decodeHeader(params.get("filename")) || videoUrl.pathname.split("/").pop() || "brain-trap-video.mp4";
+      if (params.has("title")) els.title.value = decodeHeader(params.get("title"));
+      if (params.has("description")) els.description.value = decodeHeader(params.get("description"));
+      if (params.has("tags")) els.tags.value = decodeHeader(params.get("tags"));
+      if (params.has("category")) els.category.value = params.get("category");
+      if (params.has("kids")) els.madeForKids.checked = params.get("kids") === "true";
+      chooseFile(new File([blob], filename, {type: blob.type || "video/mp4", lastModified: Date.now()}), "share");
+      setStatus(els.uploadStatus, "Video and Brain Trap details loaded. Tap Connect & upload privately.", "good");
+      history.replaceState({}, "", location.pathname);
+      return true;
+    } catch (e) {
+      setStatus(els.uploadStatus, `Could not load linked video: ${e.message}`, "error");
+      return false;
+    }
+  }
+
   async function consumeSharedVideo() {
     const params = new URLSearchParams(location.search);
     if (params.get("shareError")) {
@@ -320,14 +347,15 @@
   if("serviceWorker" in navigator){
     window.addEventListener("load",async()=>{
       try{const reg=await navigator.serviceWorker.register("./sw.js");await reg.update()}catch(e){console.warn("Service worker registration failed",e)}
-      await consumeSharedVideo();
+      const linkedVideoLoaded = await consumeLinkedVideo();
+      if (!linkedVideoLoaded) await consumeSharedVideo();
       // A shared launch is a fresh PWA instance, so restore a YouTube token after
       // the video has been recovered. If Google can do this silently, auto-upload
       // begins immediately; otherwise the normal sign-in button remains available.
       await restoreYouTubeSilently();
     })
   } else {
-    window.addEventListener("load",async()=>{await consumeSharedVideo();await restoreYouTubeSilently()})
+    window.addEventListener("load",async()=>{const linkedVideoLoaded=await consumeLinkedVideo();if(!linkedVideoLoaded)await consumeSharedVideo();await restoreYouTubeSilently()})
   }
 })();
 </script>
