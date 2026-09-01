@@ -85,6 +85,7 @@
   <section class="card">
     <h2>4. Upload</h2>
     <button id="uploadBtn" class="purple" disabled>Upload privately to YouTube</button>
+    <button id="uploadAllBtn" class="purple hidden">Upload all videos privately</button>
     <progress id="progress" value="0" max="100" class="hidden"></progress>
     <div id="uploadStatus" class="status muted">Ready when a video is selected and YouTube is connected.</div>
     <a id="studioLink" class="button-link secondary hidden" href="https://studio.youtube.com/" target="_blank" rel="noopener">Open YouTube Studio</a>
@@ -109,12 +110,13 @@
     installBtn: $("installBtn"), installHelp: $("installHelp"), sharedCard: $("sharedCard"), sharedFileName: $("sharedFileName"), sharedFileMeta: $("sharedFileMeta"),
     clientId: $("clientId"), saveClient: $("saveClient"), connectBtn: $("connectBtn"), channelStatus: $("channelStatus"), videoFile: $("videoFile"), fileInfo: $("fileInfo"),
     title: $("title"), description: $("description"), tags: $("tags"), category: $("category"), madeForKids: $("madeForKids"), autoUpload: $("autoUpload"),
-    brainTrapPreset: $("brainTrapPreset"), saveDefaults: $("saveDefaults"), uploadBtn: $("uploadBtn"), progress: $("progress"), uploadStatus: $("uploadStatus"), studioLink: $("studioLink")
+    brainTrapPreset: $("brainTrapPreset"), saveDefaults: $("saveDefaults"), uploadBtn: $("uploadBtn"), uploadAllBtn: $("uploadAllBtn"), progress: $("progress"), uploadStatus: $("uploadStatus"), studioLink: $("studioLink")
   };
 
   let tokenClient = null;
   let accessToken = "";
   let selectedFile = null;
+  let batchQueue = [];
   let deferredInstall = null;
   let uploadStarted = false;
 
@@ -164,6 +166,47 @@
 
   async function consumeLinkedVideo() {
     const params = new URLSearchParams(location.search);
+    const batch = params.get("batch");
+    if (batch) {
+      try {
+        const items = JSON.parse(batch);
+        if (!Array.isArray(items) || !items.length || items.length > 20) throw new Error("Invalid batch.");
+        setStatus(els.uploadStatus, `Loading ${items.length} videos…`, "muted");
+        batchQueue = [];
+        for (const item of items) {
+          const videoUrl = new URL(item.video, location.href);
+          if (videoUrl.origin !== location.origin) throw new Error("Only videos hosted with this app can be loaded.");
+          const response = await fetch(videoUrl.href, {cache:"no-store"});
+          if (!response.ok) throw new Error(`Video download failed (HTTP ${response.status}).`);
+          const blob = await response.blob();
+          const filename = item.filename || videoUrl.pathname.split("/").pop() || "brain-trap-video.mp4";
+          batchQueue.push({
+            file: new File([blob], filename, {type: blob.type || "video/mp4", lastModified: Date.now()}),
+            title: item.title || PRESET.title,
+            description: item.description || PRESET.description,
+            tags: item.tags || PRESET.tags,
+            category: item.category || PRESET.category,
+            madeForKids: !!item.madeForKids
+          });
+        }
+        selectedFile = batchQueue[0].file;
+        els.sharedCard.classList.remove("hidden");
+        els.sharedFileName.textContent = `${batchQueue.length} Brain Trap videos ready`;
+        els.sharedFileMeta.textContent = batchQueue.map((x,i)=>`${i+1}. ${x.file.name}`).join("\n");
+        els.title.value = batchQueue[0].title;
+        els.description.value = batchQueue[0].description;
+        els.tags.value = batchQueue[0].tags;
+        els.category.value = batchQueue[0].category;
+        els.madeForKids.checked = batchQueue[0].madeForKids;
+        els.uploadBtn.classList.add("hidden");
+        els.uploadAllBtn.classList.remove("hidden");
+        setStatus(els.uploadStatus, `${batchQueue.length} videos loaded. Sign in once, then tap Upload all videos privately.`, "good");
+        return true;
+      } catch (e) {
+        setStatus(els.uploadStatus, `Could not load batch: ${e.message}`, "error");
+        return false;
+      }
+    }
     const videoPath = params.get("video");
     if (!videoPath) return false;
     try {
@@ -332,13 +375,54 @@
     } finally { uploadStarted=false; refreshUploadButton(); }
   }
 
+  async function beginBatchUpload() {
+    if (!batchQueue.length || uploadStarted) return;
+    if (!accessToken) {
+      try {
+        setStatus(els.uploadStatus, "Connecting to YouTube once for the full batch…", "muted");
+        await requestYouTubeToken({silent:false});
+      } catch (e) {
+        setStatus(els.uploadStatus, `Google connection needed:\n${cleanError(e)}`, "error");
+        return;
+      }
+    }
+    uploadStarted = true;
+    els.uploadAllBtn.disabled = true;
+    els.progress.classList.remove("hidden");
+    const completed = [];
+    const failed = [];
+    for (let i=0; i<batchQueue.length; i++) {
+      const item = batchQueue[i];
+      selectedFile = item.file;
+      els.progress.value = 0;
+      setStatus(els.uploadStatus, `Uploading ${i+1} of ${batchQueue.length}: ${item.file.name}`, "muted");
+      try {
+        const metadata={snippet:{title:item.title,description:item.description,tags:item.tags.split(",").map(x=>x.trim()).filter(Boolean),categoryId:item.category},status:{privacyStatus:"private",selfDeclaredMadeForKids:item.madeForKids}};
+        const sessionUrl=await startResumableSession(item.file,metadata);
+        const result=await uploadInChunks(sessionUrl,item.file);
+        completed.push({name:item.file.name,id:result.id});
+      } catch (e) {
+        failed.push({name:item.file.name,error:cleanError(e)});
+        if (String(e.message).includes("401")) break;
+        if (/quota|limit|dailyLimitExceeded/i.test(String(e.message))) break;
+      }
+    }
+    const summary = [`Batch finished: ${completed.length} uploaded.`];
+    if (failed.length) summary.push(`${failed.length} stopped or failed.`, ...failed.map(x=>`${x.name}: ${x.error}`));
+    if (completed.length) summary.push("All successful uploads are Private in YouTube Studio.");
+    setStatus(els.uploadStatus, summary.join("\n"), failed.length ? "error" : "good");
+    els.studioLink.classList.toggle("hidden", !completed.length);
+    uploadStarted = false;
+    els.uploadAllBtn.disabled = false;
+  }
+
   els.clientId.value = localStorage.getItem("ytQuickUploader.clientId") || "";
   loadDefaults();
   refreshUploadButton();
   els.saveClient.addEventListener("click",()=>{const id=els.clientId.value.trim();if(!id.endsWith(".apps.googleusercontent.com")){alert("That does not look like a Google OAuth Web Client ID.");return}localStorage.setItem("ytQuickUploader.clientId",id);tokenClient=null;alert("Client ID saved on this phone.")});
   els.connectBtn.addEventListener("click",async()=>{try{await connectYouTube();await maybeAutoUpload()}catch(e){setStatus(els.channelStatus,`Sign-in error: ${e.message}`,"error")}});
   els.videoFile.addEventListener("change",()=>chooseFile(els.videoFile.files&&els.videoFile.files[0]));
-  els.title.addEventListener("input",refreshUploadButton); els.uploadBtn.addEventListener("click",beginUpload); els.brainTrapPreset.addEventListener("click",applyPreset); els.saveDefaults.addEventListener("click",saveDefaults); els.autoUpload.addEventListener("change",()=>localStorage.setItem("ytQuickUploader.autoUpload",String(!!els.autoUpload.checked)));
+  els.title.addEventListener("input",refreshUploadButton); els.uploadBtn.addEventListener("click",beginUpload); els.uploadAllBtn.addEventListener("click",beginBatchUpload); els.brainTrapPreset.addEventListener("click",applyPreset); els.saveDefaults.addEventListener("click",saveDefaults); els.autoUpload.addEventListener("change",()=>localStorage.setItem("ytQuickUploader.autoUpload",String(!!els.autoUpload.checked)));
 
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;els.installBtn.classList.remove("hidden")});
   els.installBtn.addEventListener("click",async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;els.installBtn.classList.add("hidden")});
