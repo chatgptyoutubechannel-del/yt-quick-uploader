@@ -1,4 +1,4 @@
-const APP_CACHE = "yt-quick-uploader-v4";
+const APP_CACHE = "yt-quick-uploader-v5";
 const MEDIA_CACHE = "yt-quick-uploader-shared-media-v1";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
