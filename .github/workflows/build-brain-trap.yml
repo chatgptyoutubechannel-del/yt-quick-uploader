@@ -12,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate five new Brain Trap videos
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Generate five fresh Brain Trap videos
         shell: bash
         run: |
           set -euo pipefail
@@ -20,18 +22,18 @@ jobs:
           make_video() {
             local file="$1"; local puzzle="$2"; local answer="$3"
             ffmpeg -y -f lavfi -i "color=c=0b1020:s=1080x1920:r=30" -t 8 \
-              -vf "drawtext=fontcolor=white:fontsize=72:x=(w-text_w)/2:y=180:text='BRAIN TRAP',drawtext=fontcolor=white:fontsize=50:x=(w-text_w)/2:y=520:text='$puzzle',drawtext=fontcolor=white:fontsize=42:x=(w-text_w)/2:y=1420:text='ANSWER: $answer'" \
+              -vf "drawtext=fontcolor=white:fontsize=72:x=(w-text_w)/2:y=180:text='BRAIN TRAP',drawtext=fontcolor=white:fontsize=48:x=80:y=520:text='$puzzle':line_spacing=18,drawtext=fontcolor=white:fontsize=42:x=(w-text_w)/2:y=1420:text='ANSWER: $answer'" \
               -c:v libx264 -preset veryfast -crf 28 -pix_fmt yuv420p -movflags +faststart "$file"
           }
-          make_video videos/Brain_Trap_New_Puzzle_1.mp4 "I am full of holes but I can still hold water. What am I?" "A sponge"
-          make_video videos/Brain_Trap_New_Puzzle_2.mp4 "What has a face and two hands but no arms or legs?" "A clock"
-          make_video videos/Brain_Trap_New_Puzzle_3.mp4 "The more you take, the more you leave behind. What are they?" "Footsteps"
-          make_video videos/Brain_Trap_New_Puzzle_4.mp4 "What has one eye but cannot see?" "A needle"
-          make_video videos/Brain_Trap_New_Puzzle_5.mp4 "What gets wetter the more it dries?" "A towel"
+          make_video videos/Brain_Trap_Fresh_Puzzle_1.mp4 "What can travel around the world while staying in one corner?" "A stamp"
+          make_video videos/Brain_Trap_Fresh_Puzzle_2.mp4 "I have keys but no locks, space but no room. What am I?" "A keyboard"
+          make_video videos/Brain_Trap_Fresh_Puzzle_3.mp4 "What has many teeth but cannot bite?" "A comb"
+          make_video videos/Brain_Trap_Fresh_Puzzle_4.mp4 "What comes once in a minute, twice in a moment, but never in a thousand years?" "The letter M"
+          make_video videos/Brain_Trap_Fresh_Puzzle_5.mp4 "What has cities, roads and rivers but no people, cars or water?" "A map"
       - name: Commit generated videos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add videos/Brain_Trap_New_Puzzle_*.mp4
-          git commit -m "Add five new Brain Trap bulk-load test videos" || echo "No changes to commit"
+          git add videos/Brain_Trap_Fresh_Puzzle_*.mp4
+          git commit -m "Add five fresh Brain Trap bulk-load videos" || echo "No changes to commit"
           git push
