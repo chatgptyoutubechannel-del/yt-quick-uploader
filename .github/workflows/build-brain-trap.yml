@@ -1,8 +1,9 @@
 name: Build Brain Trap Test Videos
 on:
   push:
-    paths:
-      - '.github/workflows/build-brain-trap.yml'
+    branches: [main]
+    paths-ignore:
+      - 'videos/**'
   workflow_dispatch:
 permissions:
   contents: write
